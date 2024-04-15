@@ -1,18 +1,21 @@
 import { Logger } from './logger';
 
-import type { ApiConfig } from '../types';
+import { type ApiConfig } from '../types';
+import { IOCNames } from '../ioc';
 export class HTTP {
   logger: Logger;
   apiConfig: ApiConfig;
 
-  constructor(apiConfig: ApiConfig) {
-    this.apiConfig = apiConfig;
-    this.logger = new Logger();
+  static $inject: IOCNames[] = ['config', 'logger'];
+  static $singleton: boolean = true;
+
+  constructor(config: ApiConfig, logger: Logger) {
+    this.apiConfig = config;
+    this.logger = logger;
   }
 
   async get(url: string) {
     const response = await fetch(`${this.apiConfig.path}${url}`);
-
     if (response.ok) {
       const responseData = await response.json();
       this.logger.info(`Status: ${response.status}. Response: ${JSON.stringify(responseData)}`);
